@@ -5,7 +5,6 @@ from threading import Semaphore
 #Load Model
 model = KeyedVectors.load('/home/data/word2vec_models/glove.6B.300d.model', mmap='r')
 model.syn0norm = model.syn0  # prevent recalc of normed vectors
-model.most_similar('stuff')  # any word will do: just to page all in
 
 #Use Model
 print(model.most_similar('stuff'))

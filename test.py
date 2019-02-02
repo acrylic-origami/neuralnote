@@ -1,16 +1,10 @@
-import nltk
+from gensim.test.utils import datapath, get_tmpfile
+from gensim.models import KeyedVectors
+from gensim.scripts.glove2word2vec import glove2word2vec
 
-##Datasets download on first run
-#nltk.download('averaged_perceptron_tagger') #for tagger
-#nltk.download('punkt') #for tokenize
 
-blob = "I feel that eggs are the best breakfast food due to their high protein content. He wanted food too."
+file = datapath("/home/data/word2vec_models/glove.6B.300d.txt")
+model = KeyedVectors.load_word2vec_format(file, binary=False)
 
-tokens = nltk.word_tokenize(blob)
-print(tokens)
-
-tagged = nltk.pos_tag(tokens)
-print(tagged)
-
-for word in tagged:
-	print(word[0] +" "+  word[1])
+model.init_sims(replace=True)
+print(model.similarity("nick", "derek"))

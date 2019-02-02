@@ -1,4 +1,8 @@
 import nltk
+import os
+from nltk.parse import CoreNLPParser
+from nltk.parse.corenlp import CoreNLPDependencyParser
+from nltk import Tree
 
 entity_tokens = ["NN", "NNS", "NNP", "NNPS", "PRP", "PRP$", "SYM"]
 
@@ -48,4 +52,72 @@ def parseSentence(data):
 	return entities
 
 
-print(parseSentence("I feel that eggs are the best breakfast food table due to their high protein content."))
+#https://stackoverflow.com/questions/13883277/stanford-parser-and-nltk/51981566#51981566
+#https://www.nltk.org/book/ch08.html tree key
+'''
+Symbol	Meaning			Example
+S		sentence		the man walked
+NP		noun phrase		a dog
+VP		verb phrase		saw a park
+PP		prepositional phrase	with a telescope
+Det		determiner		the
+N		noun			dog
+V		verb			walked
+P		preposition		in
+'''
+
+def parseSentenceStructure(data):
+
+	#Tokenize sent.
+	tokens = nltk.word_tokenize(data)
+
+	#Tag sent.
+	tagged = nltk.pos_tag(tokens)
+
+	#Parser
+	parser = CoreNLPParser(url='http://localhost:9000') #https://stackoverflow.com/questions/13883277/stanford-parser-and-nltk/51981566#51981566
+	dep_parser = CoreNLPDependencyParser(url='http://localhost:9000')
+
+	#Parse w/ Stanford
+	tree = parser.raw_parse(data)
+
+	list(tree)[0].pretty_print()
+	print(tree)
+	#print(list(tree))
+
+
+print(parseSentenceStructure("Dog saw man"))
+#"I feel that eggs are the best breakfast food table due to their high protein content."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

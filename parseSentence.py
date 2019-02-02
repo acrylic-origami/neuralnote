@@ -3,8 +3,12 @@ import os
 from nltk.parse import CoreNLPParser
 from nltk.parse.corenlp import CoreNLPDependencyParser
 from nltk import Tree
+import psycopg2
+from nltk.tree import *
 
-entity_tokens = ["NN", "NNS", "NNP", "NNPS", "PRP", "PRP$", "SYM"]
+
+entity_tokens = ["NN", "NNS", "NNP", "NNPS", "PRP", "PRP$"]
+entity_phrase= ["NP"]
 
 #This function generates the entities from a sentence 
 def parseSentence(data):
@@ -66,6 +70,135 @@ V		verb			walked
 P		preposition		in
 '''
 
+'''
+
+'''
+
+#http://www.surdeanu.info/mihai/teaching/ista555-fall13/readings/PennTreebankConstituents.html
+
+def tree_recurse_find(parent, level=0):
+	for child in parent:
+		if isinstance(child, nltk.Tree):
+			# tree child
+			#print(child.label()) #This gives label
+
+			if(child.label() == "S"):
+
+				#CHECK NO DEEPER S
+
+				#Proceed to processing
+				entity = tree_recurse_entity(child, 0) #dive down
+				relation = tree_recurse_relation(child, 0)
+				related_entity = tree_recurse_related_entity(child,0)
+				related_entity = related_entity[len(relation):]
+
+				print(entity)
+				print(relation)
+				print(related_entity)
+
+				return
+
+			tree_recurse_find(child, level+1) #dive down
+
+		else: #we have reached the end
+			parent.label() #"PRP"
+			# leaf (word) child #child=word
+
+def tree_recurse_related_entity(parent, level=0):
+	outcome =[]
+	for child in parent:
+		if isinstance(child, nltk.Tree):
+			# tree child
+			if(child.label() == "VP"):
+				#We found entity tree, need to capture and pass up
+				return tree_recurse_related_entity_data(child)
+
+
+			outcome += tree_recurse_related_entity(child, level+1) #dive down
+
+		else: #we have reached the end
+			parent.label() #"PRP"
+			# leaf (word) child #child=word
+	return outcome
+
+
+def tree_recurse_related_entity_data(parent, level=0):
+	outcome=[]
+	for child in parent:
+		if isinstance(child, nltk.Tree):
+			outcome += tree_recurse_related_entity_data(child, level+1) #dive down
+		elif not isinstance(child, nltk.Tree): #we have reached the end
+			parent.label() #"PRP"
+			# leaf (word) child #child=word
+			return [child]
+	return outcome
+
+
+def tree_recurse_relation(parent, level=0):
+	outcome =[]
+	for child in parent:
+		if isinstance(child, nltk.Tree):
+			# tree child
+			if(child.label() == "VP"):
+				#We found entity tree, need to capture and pass up
+				return tree_recurse_relation_data(child)
+
+
+			outcome += tree_recurse_relation(child, level+1) #dive down
+
+		else: #we have reached the end
+			parent.label() #"PRP"
+			# leaf (word) child #child=word
+	return outcome
+
+
+def tree_recurse_relation_data(parent, level=0):
+	outcome=[]
+	for child in parent:
+		if isinstance(child, nltk.Tree) and child.label() != "NP":
+			outcome += tree_recurse_relation_data(child, level+1) #dive down
+		elif not isinstance(child, nltk.Tree): #we have reached the end
+			parent.label() #"PRP"
+			# leaf (word) child #child=word
+			return [child]
+	return outcome
+
+
+
+
+def tree_recurse_entity(parent, level=0):
+	outcome = []
+	for child in parent:
+		if isinstance(child, nltk.Tree):
+			# tree child
+			#print(child.label()) #This gives label
+
+			if(child.label() in entity_phrase):
+				#We found entity tree, need to capture and pass up
+				#print("FOUND NP")
+
+				return tree_recurse_entity_data(child)
+
+
+			outcome += tree_recurse_entity(child, level+1) #dive down
+
+		else: #we have reached the end
+			parent.label() #"PRP"
+			# leaf (word) child #child=word
+
+
+def tree_recurse_entity_data(parent, level=0):
+	outcome=[]
+	for child in parent:
+		if isinstance(child, nltk.Tree):
+			outcome += tree_recurse_entity_data(child, level+1) #dive down
+		else: #we have reached the end
+			parent.label() #"PRP"
+			# leaf (word) child #child=word
+			return [child]
+	return outcome
+
+
 def parseSentenceStructure(data):
 
 	#Tokenize sent.
@@ -80,13 +213,20 @@ def parseSentenceStructure(data):
 
 	#Parse w/ Stanford
 	tree = parser.raw_parse(data)
-
-	list(tree)[0].pretty_print()
-	print(tree)
 	#print(list(tree))
 
+	#list(tree)[0].pretty_print()
+	#print(list(tree))
 
-print(parseSentenceStructure("Dog saw man"))
+	#Provide N-V-N relationships w/ all N combinations
+
+	#Traverse for NP root
+	tree_recurse_find(list(tree)[0])
+
+
+
+
+print(parseSentenceStructure("John loves nothing, but tall humans are cool."))
 #"I feel that eggs are the best breakfast food table due to their high protein content."
 
 
@@ -96,6 +236,14 @@ print(parseSentenceStructure("Dog saw man"))
 
 
 
+'''
+if __name__ == '__main__':
+	with psycopg2.connect('dbname=nl user=nl password=logbase') as conn:
+		cur = conn.cursor()
+		cur.execute('SELECT body FROM documents;')
+		for row in cur:
+			print(parseSentenceStructure(row[0]))
+'''
 
 
 

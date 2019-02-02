@@ -5,4 +5,4 @@ if __name__ == '__main__':
 		cur = conn.cursor()
 		cur.execute('SELECT body FROM documents;')
 		for row in cur:
-			row[0]
+			print(row[0])

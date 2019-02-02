@@ -1,9 +1,12 @@
 import nltk
-import numpy as np
-import psycopg2
+import os
+from nltk.parse import CoreNLPParser
+from nltk.parse.corenlp import CoreNLPDependencyParser
+from nltk import Tree
 import keyLookup as K
+import psycopg2
 
-entity_tokens = set("NN", "NNS", "NNP", "NNPS", "PRP", "PRP$", "SYM")
+entity_tokens = ["NN", "NNS", "NNP", "NNPS", "PRP", "PRP$"]
 
 #This function generates the entities from a sentence 
 with psycopg2.connect('dbname=nl user=nl password=logbase') as conn:
@@ -99,4 +102,92 @@ def parseSentence(data):
 		return entities
 
 
-print(parseSentence("I feel that eggs are the best breakfast food table due to their high protein content."))
+#https://stackoverflow.com/questions/13883277/stanford-parser-and-nltk/51981566#51981566
+#https://www.nltk.org/book/ch08.html tree key
+'''
+Symbol	Meaning			Example
+S		sentence		the man walked
+NP		noun phrase		a dog
+VP		verb phrase		saw a park
+PP		prepositional phrase	with a telescope
+Det		determiner		the
+N		noun			dog
+V		verb			walked
+P		preposition		in
+'''
+
+'''
+
+'''
+
+#http://www.surdeanu.info/mihai/teaching/ista555-fall13/readings/PennTreebankConstituents.html
+
+
+def traverse_tree(tree):
+    # print("tree:", tree)
+    for subtree in tree:
+        if type(subtree) == nltk.tree.Tree:
+            traverse_tree(subtree)
+
+def parseSentenceStructure(data):
+
+	#Tokenize sent.
+	tokens = nltk.word_tokenize(data)
+
+	#Tag sent.
+	tagged = nltk.pos_tag(tokens)
+
+	#Parser
+	parser = CoreNLPParser(url='http://localhost:9000') #https://stackoverflow.com/questions/13883277/stanford-parser-and-nltk/51981566#51981566
+	dep_parser = CoreNLPDependencyParser(url='http://localhost:9000')
+
+	#Parse w/ Stanford
+	tree = parser.raw_parse(data)
+	#print(list(tree))
+
+	list(tree)[0].pretty_print()
+	#print(list(tree))
+
+'''
+if __name__ == '__main__':
+	with psycopg2.connect('dbname=nl user=nl password=logbase') as conn:
+		cur = conn.cursor()
+		cur.execute('SELECT body FROM documents;')
+		for row in cur:
+			print(parseSentenceStructure(row[0]))
+'''
+print(parseSentenceStructure("Dog saw man."))
+#"I feel that eggs are the best breakfast food table due to their high protein content."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

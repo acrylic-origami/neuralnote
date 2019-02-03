@@ -49,8 +49,16 @@ def getSentenceRelations(query, data):
 
 	return sub_trees
 
-sub_tree = getSentenceRelations("NP" ,"I know this has already been answered, but I wanted to share a potentially better looking way to call Popen via the use of from x import x and functions.")
+target = "I know this has already been answered, but I wanted to share a potentially better looking way to call Popen via the use of from x import x and functions."
 
+sub_tree = getSentenceRelations("S" ,target)
+
+root = parser.raw_parse(target)
+tree_string = list(root)[0]
+tree_string = str(tree_string).replace("\n", "")
+tree_string = ' '.join(tree_string.split())
+root = Tree.fromstring(tree_string)
+list(root)[0].pretty_print()
 
 for item in sub_tree:
 	tree = Tree.fromstring(item)

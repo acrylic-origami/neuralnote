@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import { Sidebar } from "./components/Sidebar";
 import { DocumentEditor } from "./components/Editor";
-import { SearchView } from "./views";
+import { SearchView, EntityView } from "./views";
 import SearchBar from "./components/SearchBar/SearchBar";
 import EntityBar from "./components/EntityBar/EntityBar";
 
@@ -52,6 +52,7 @@ class App extends Component {
               <div style={{ flexGrow: 1, display: "flex" }}>
                 <Route path="/" exact component={DocumentEditor} />
                 <Route path="/search/:query" component={SearchView} />
+                <Route path="/entity/:entityName" component={EntityView} />
               </div>
             </div>
           </div>

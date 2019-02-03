@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import { Sidebar } from "./components/Sidebar";
 import { DocumentEditor } from "./components/Editor";
-import { SearchView } from "./views";
+import { SearchView, EntityView } from "./views";
 import SearchBar from "./components/SearchBar/SearchBar";
+import EntityBar from "./components/EntityBar/EntityBar";
 
 class App extends Component {
   state = {
@@ -42,11 +43,16 @@ class App extends Component {
                 height: "100%"
               }}
             >
-              <Route path="/" component={SearchBar} />
+              <Switch>
+                <Route path="/entity/:entityName" component={EntityBar} />
+                <Route path="/search/:query" component={SearchBar} />
+                <Route path="/" component={SearchBar} />
+              </Switch>
 
               <div style={{ flexGrow: 1, display: "flex" }}>
                 <Route path="/" exact component={DocumentEditor} />
                 <Route path="/search/:query" component={SearchView} />
+                <Route path="/entity/:entityName" component={EntityView} />
               </div>
             </div>
           </div>

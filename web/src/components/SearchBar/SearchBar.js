@@ -16,14 +16,13 @@ const styles = {
     padding: 8,
     display: "inline-block",
     border: "none",
-    width: "70%",
-    transition: "width 0.4s ease-in-out"
+    width: "70%"
   }
 };
 
 export default class SearchBar extends React.Component {
   state = {
-    searchQuery: ""
+    searchQuery: this.props.match.params.query || ""
   };
 
   submitSearch = () => {
@@ -32,7 +31,7 @@ export default class SearchBar extends React.Component {
 
   render() {
     return (
-      <div style={{ ...styles.searchDiv }}>
+      <div style={styles.searchDiv}>
         <span style={styles.searchIcon}>
           <IoIosSearch />
         </span>

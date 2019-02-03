@@ -1,4 +1,4 @@
-import DefaultView from "./DefaultView";
 import SearchView from "./SearchView";
+import EntityView from "./EntityView";
 
-export { DefaultView, SearchView };
+export { SearchView, EntityView };

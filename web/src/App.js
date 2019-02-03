@@ -9,14 +9,14 @@ import EntityBar from "./components/EntityBar/EntityBar";
 
 class App extends Component {
   state = {
-    documentTitles: ["Document 1", "Document 2", "Document 3", "Ramblings"]
+    documents: ["Document 1", "Document 2", "Document 3", "Ramblings"]
   };
 
   onAdd = () => {
-    let oldTitles = this.state.documentTitles;
-    oldTitles.push("New Document");
+    let oldDocs = this.state.documents;
+    oldDocs.push("Document " + (oldDocs.length + 1));
     this.setState({
-      documentTitles: oldTitles
+      documents: oldDocs
     });
   };
 
@@ -26,7 +26,7 @@ class App extends Component {
         <div style={{ display: "flex", height: "100%" }}>
           <Sidebar
             style={{ flex: 1 }}
-            documentTitles={this.state.documentTitles}
+            documents={this.state.documents}
             onAdd={this.onAdd}
           />
           <div
@@ -50,9 +50,14 @@ class App extends Component {
               </Switch>
 
               <div style={{ flexGrow: 1, display: "flex" }}>
-                <Route path="/" exact component={DocumentEditor} />
                 <Route path="/search/:query" component={SearchView} />
                 <Route path="/entity/:entityName" component={EntityView} />
+                <Route
+                  path="/document/:documentName"
+                  exact
+                  component={DocumentEditor}
+                />
+                <Route path="/" exact component={DocumentEditor} />
               </div>
             </div>
           </div>

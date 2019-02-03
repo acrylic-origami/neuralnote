@@ -1,11 +1,13 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const styles = {
   sidebar: {
     fontFamily: ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
     background: "#F9F9F7",
-    padding: 10
+    padding: 10,
+    overflow: "auto"
   },
   logoTitle: {
     fontSize: 30
@@ -39,7 +41,8 @@ const styles = {
     color: "white",
     textAlign: "center",
     fontSize: 20,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    outline: "none"
   }
 };
 
@@ -57,12 +60,18 @@ export default class Sidebar extends React.Component {
         </div>
 
         <h3 style={styles.documents}>DOCUMENTS</h3>
-        {this.props.documentTitles &&
-          this.props.documentTitles.map((title, i) => {
+        {this.props.documents &&
+          this.props.documents.map((documentName, i) => {
             return (
-              <p key={i}>
-                <span style={styles.docBullet}>►</span> {title}
-              </p>
+              <Link
+                key={i}
+                to={"/document/" + encodeURI(documentName)}
+                style={{ textDecoration: "none", color: "black" }}
+              >
+                <p>
+                  <span style={styles.docBullet}>►</span> {documentName}
+                </p>
+              </Link>
             );
           })}
         <div style={styles.addButtonDiv}>
@@ -77,6 +86,6 @@ export default class Sidebar extends React.Component {
 
 Sidebar.propTypes = {
   style: PropTypes.object,
-  documentTitles: PropTypes.array.isRequired,
+  documents: PropTypes.array.isRequired,
   onAdd: PropTypes.func
 };

@@ -49,7 +49,6 @@ export default class SearchView extends React.Component {
   render() {
     return (
       <div style={{ flexGrow: 1, overflow: "auto", padding: 20 }}>
-        <h1>Results for: {this.props.match.params.entityName}</h1>
         {this.state.results &&
           this.state.results.map((result, key) => {
             return (

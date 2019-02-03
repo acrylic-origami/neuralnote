@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "draft-js": "^0.10.5",
+    "draftjs-to-html": "^0.8.4",
     "prop-types": "^15.6.2",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",

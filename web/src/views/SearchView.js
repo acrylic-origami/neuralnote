@@ -14,7 +14,22 @@ const styles = {
   entityTitle: {
     background: "linear-gradient(90deg, #e66465, #9198e5)",
     color: "white",
-    display: "inline-block"
+    display: "inline-block",
+    padding: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderRadius: 3
+  },
+  entityCardDocument: {
+    textTransform: "uppercase",
+    color: "#ABABA7",
+    marginTop: 15,
+    marginBottom: 5
+  },
+  entityCardContent: {
+    fontWeight: 600,
+    fontSize: 22,
+    marginTop: 0
   }
 };
 
@@ -52,8 +67,20 @@ export default class SearchView extends React.Component {
               >
                 <div className="searchResultCard" style={styles.entityCard}>
                   <div style={styles.entityTitle}>
-                    <span>{entity.name}</span>
+                    <span style={{ fontWeight: 700 }}>
+                      &nbsp;{entity.name}&nbsp;
+                    </span>
                   </div>
+                  {entity.results.map((result, key) => {
+                    return (
+                      <div key={key}>
+                        <h4 style={styles.entityCardDocument}>
+                          {result.docName}
+                        </h4>
+                        <p style={styles.entityCardContent}>{result.content}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               </Link>
             );

@@ -53,7 +53,32 @@ with psycopg2.connect('dbname=nl user=nl password=logbase') as conn:
 	W = [[K.model.word_vec(word) if not isinstance(word, list) else np.mean(K.model.word_vec(w) for w in word) for _, word in sentence] for sentence in D_items]
 	norms = [[np.linalg.norm(np.matmul(a, b.T)) for sid_b, b in W[i:]] for i, a in enumerate(W)] # consider using determinant but not sensitive to linear dependence, or otherwise understanding the semantics of matrix norm in this context
 	np_norms = np.array([[norms[i][j] for j in range(i-1)] + n for i, n in enumerate(norms)])
-	np_norms.argsort()[-TOP:]
+	cur.execute('CREATE TEMPORARY TABLE _top_sentences ( sentence INT )')
+	cur.execute('INSERT INTO _top_sentences VALUES %s' % ('(%s),' * TOP)[:-1], np_norms.argsort()[-TOP:])
+	cur.execute('''
+		WITH RECURSIVE r (parent, match) AS (
+			SELECT ts.r_cid, top_s.sentence FROM test.rsentence ts
+				LEFT JOIN _top_sentences top_s ON top_s.sentence = ts.sentence
+				WHERE ts.sentence = 98
+			UNION
+			SELECT tt.child, top_s.sentence FROM r
+				INNER JOIN test.rtree tt ON tt.parent = r.parent
+				INNER JOIN test.rsentence tr ON tr.r_cid = tt.child
+				LEFT JOIN _top_sentences top_s ON top_s.sentence = tr.sentence
+		),
+		s (child, match) AS (
+			SELECT ts.r_cid, top_s.sentence FROM test.rsentence ts
+				LEFT JOIN _top_sentences top_s ON top_s.sentence = ts.sentence
+				WHERE ts.sentence = 98
+			UNION
+			SELECT tt.parent, top_s.sentence FROM s
+				INNER JOIN test.rtree tt ON tt.child = s.child
+				INNER JOIN test.rsentence tr ON tr.r_cid = tt.parent
+				LEFT JOIN _top_sentences top_s ON top_s.sentence = tr.sentence
+		)
+		SELECT * FROM r WHERE match IS NOT NULL
+			UNION SELECT * FROM s WHERE match IS NOT NULL;
+	''')
 	# see top 5 max matches branch
 	# for i, (sid_l, left) in enumerate(D_items):
 	# 	for sid_r, right in D_items[i:]:

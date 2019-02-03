@@ -37,17 +37,57 @@ export default class SearchView extends React.Component {
   state = {
     entities: [
       {
-        name: "bagel",
+        name: "problems",
         results: [
-          { docName: "Document 1", content: "I just had a bagel today..." },
-          { docName: "Document 2", content: "I love bagels!!!" }
+          {
+            docName: "Document 1",
+            content: "Solving problems that are multi faceted..."
+          },
+          {
+            docName: "Document 3",
+            content: "Software is also a tough problem to solve"
+          }
         ]
       },
       {
-        name: "bread",
+        name: "multi-faceted problems",
         results: [
-          { docName: "Document 3", content: "My favorite bread recipe..." },
-          { docName: "Document 1", content: "Bagels are a kind of bread" }
+          {
+            docName: "Document 3",
+            content: "politics it would even be a tough enough problem..."
+          },
+          {
+            docName: "Ramblings",
+            content:
+              "tackle the problem of localization and you distribute your risk"
+          }
+        ]
+      },
+      {
+        name: "business",
+        results: [
+          {
+            docName: "Ramblings",
+            content: "trying to build a MONOPOLY, then you do not need..."
+          },
+          {
+            docName: "Document 1",
+            content: "this is why I like business or design"
+          }
+        ]
+      },
+      {
+        name: "design",
+        results: [
+          {
+            docName: "Document 1",
+            content: "this is why I like business or design"
+          },
+          {
+            docName: "Document 2",
+            content:
+              "I sometimes struggle with the very personal I would put a piece of artwork"
+          }
         ]
       }
     ]

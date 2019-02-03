@@ -1,5 +1,5 @@
 import React from "react";
-import { IoIosSearch } from "react-icons/io";
+import "./searchbar.css";
 
 const styles = {
   searchDiv: {
@@ -22,29 +22,44 @@ const styles = {
 
 export default class SearchBar extends React.Component {
   state = {
-    searchQuery: this.props.match.params.query || ""
+    searchQuery: this.props.match.params.query || "",
+    className: this.props.match.params.query
+      ? "search-text search-text-focus"
+      : "search-text"
   };
 
-  submitSearch = () => {
-    this.props.history.push("/search/" + encodeURI(this.state.searchQuery));
+  handleKeyPress = e => {
+    if (e.key === "Enter") {
+      this.props.history.push("/search/" + encodeURI(this.state.searchQuery));
+    }
+  };
+
+  onFocus = () => {
+    this.setState({ className: "search-text search-text-focus" });
+  };
+
+  onBlur = () => {
+    if (this.state.searchQuery.length === 0)
+      this.setState({ className: "search-text" });
+    else this.setState({ className: "search-text search-text-focus" });
   };
 
   render() {
     return (
       <div style={styles.searchDiv}>
-        <span style={styles.searchIcon}>
-          <IoIosSearch />
-        </span>
         <input
-          style={styles.searchInput}
+          type="search"
+          name="q"
           value={this.state.searchQuery}
+          onFocus={this.onFocus}
+          onBlur={this.onBlur}
+          onKeyPress={this.handleKeyPress}
           onChange={e => {
             this.setState({ searchQuery: e.target.value });
           }}
+          className={this.state.className}
+          placeholder="Search..."
         />
-        <button style={{ display: "inline-block" }} onClick={this.submitSearch}>
-          Enter
-        </button>
       </div>
     );
   }

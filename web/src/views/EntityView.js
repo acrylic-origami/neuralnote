@@ -40,32 +40,85 @@ const styles = {
 
 export default class SearchView extends React.Component {
   state = {
-    results: [
-      { docName: "Document 3", content: "My favorite bread recipe..." },
-      { docName: "Document 1", content: "Bagels are a kind of bread" }
-    ]
+    results: {
+      problems: [
+        {
+          docName: "Document 1",
+          content: "Solving problems that are multi faceted..."
+        },
+        {
+          docName: "Document 3",
+          content: "Software is also a tough problem to solve"
+        }
+      ],
+      "multi-faceted problems": [
+        {
+          docName: "Document 3",
+          content: "politics it would even be a tough enough problem..."
+        },
+        {
+          docName: "Ramblings",
+          content:
+            "tackle the problem of localization and you distribute your risk"
+        }
+      ],
+      business: [
+        {
+          docName: "Ramblings",
+          content: "trying to build a MONOPOLY, then you do not need..."
+        },
+        {
+          docName: "Document 1",
+          content: "this is why I like business or design"
+        }
+      ],
+      design: [
+        {
+          docName: "Document 1",
+          content: "this is why I like business or design"
+        },
+        {
+          docName: "Document 2",
+          content:
+            "I sometimes struggle with the very personal I would put a piece of artwork"
+        }
+      ]
+    }
   };
 
   render() {
+    let currentEntity = decodeURI(this.props.match.params.entityName);
+    let entityData = this.state.results[currentEntity];
+
     return (
-      <div style={{ flexGrow: 1, overflow: "auto", padding: 20 }}>
-        {this.state.results &&
-          this.state.results.map((result, key) => {
+      <div
+        style={{
+          flexGrow: 1,
+          overflow: "auto",
+          padding: 20,
+          minHeight: 0
+        }}
+      >
+        {entityData ? (
+          entityData.map((document, key) => {
             return (
               <Link
                 key={key}
-                to={"/document/" + encodeURI(result.docName)}
+                to={"/document/" + encodeURI(document.docName)}
                 style={{ textDecoration: "none", color: "black" }}
               >
                 <div className="searchResultCard" style={styles.documentCard}>
                   <div style={styles.docTitleDiv}>
-                    <h4 style={styles.documentCardTitle}>{result.docName}</h4>
+                    <h4 style={styles.documentCardTitle}>{document.docName}</h4>
                   </div>
-                  <p style={styles.documentCardContent}>{result.content}</p>
+                  <p style={styles.documentCardContent}>{document.content}</p>
                 </div>
               </Link>
             );
-          })}
+          })
+        ) : (
+          <h2>No Results Found.</h2>
+        )}
       </div>
     );
   }

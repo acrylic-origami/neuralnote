@@ -7,6 +7,7 @@ const styles = {
     fontFamily: ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
     background: "#F9F9F7",
     padding: 10,
+    paddingLeft: 25,
     overflow: "auto"
   },
   logoTitle: {
@@ -51,7 +52,9 @@ export default class Sidebar extends React.Component {
     return (
       <div style={{ ...styles.sidebar, ...this.props.style }}>
         <div>
-          <h2 style={styles.logoTitle}>Neural Notes</h2>
+          <Link to="/" style={{ textDecoration: "none", color: "black" }}>
+            <h2 style={styles.logoTitle}>Neural Notes</h2>
+          </Link>
           {/* <img
             src={require("../../assets/img/flamingo.png")}
             alt="logo"

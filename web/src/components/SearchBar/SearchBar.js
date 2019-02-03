@@ -23,7 +23,7 @@ const styles = {
 
 export default class SearchBar extends React.Component {
   state = {
-    searchQuery: ""
+    searchQuery: this.props.match.params.query || ""
   };
 
   submitSearch = () => {

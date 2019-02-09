@@ -12,7 +12,8 @@ from datetime import datetime
 
 # 'announcements', 
 # 'funny', 
-SUBS = [ 'AskReddit', 'todayilearned', 'science', 'worldnews', 'pics', 'IAmA', 'gaming', 'videos', 'movies', 'aww', 'Music', 'blog', 'gifs', 'news', 'explainlikeimfive', 'askscience', 'EarthPorn', 'books', 'television', 'mildlyinteresting', 'LifeProTips', 'Showerthoughts', 'space', 'DIY', 'Jokes', 'gadgets', 'nottheonion', 'sports', 'tifu', 'food', 'photoshopbattles', 'Documentaries', 'Futurology', 'history', 'InternetIsBeautiful', 'dataisbeautiful', 'UpliftingNews', 'listentothis', 'GetMotivated', 'personalfinance', 'OldSchoolCool', 'philosophy', 'Art', 'nosleep', 'WritingPrompts', 'creepy' ] # 'TwoXChromosomes', 'Fitness', 'technology', 'WTF', 'bestof', 'AdviceAnimals', 'politics', 'atheism', 'interestingasfuck', 'europe', 'woahdude', 'BlackPeopleTwitter', 'oddlysatisfying', 'gonewild', 'leagueoflegends', 'pcmasterrace', 'reactiongifs', 'gameofthrones', 'wholesomememes', 'Unexpected', 'Overwatch', 'facepalm', 'trees', 'Android', 'lifehacks', 'me_irl', 'relationships', 'Games', 'nba', 'programming', 'tattoos', 'NatureIsFuckingLit', 'Whatcouldgowrong', 'CrappyDesign', 'dankmemes', 'nsfw', 'cringepics', '4chan', 'soccer', 'comics', 'sex', 'pokemon', 'malefashionadvice', 'NSFW_GIF', 'StarWars', 'Frugal', 'HistoryPorn', 'AnimalsBeingJerks', 'RealGirls', 'travel', 'buildapc', 'OutOfTheLoop'
+# 'AskReddit', 
+SUBS = [ 'todayilearned', 'science', 'worldnews', 'pics', 'IAmA', 'gaming', 'videos', 'movies', 'aww', 'Music', 'blog', 'gifs', 'news', 'explainlikeimfive', 'askscience', 'EarthPorn', 'books', 'television', 'mildlyinteresting', 'LifeProTips', 'Showerthoughts', 'space', 'DIY', 'Jokes', 'gadgets', 'nottheonion', 'sports', 'tifu', 'food', 'photoshopbattles', 'Documentaries', 'Futurology', 'history', 'InternetIsBeautiful', 'dataisbeautiful', 'UpliftingNews', 'listentothis', 'GetMotivated', 'personalfinance', 'OldSchoolCool', 'philosophy', 'Art', 'nosleep', 'WritingPrompts', 'creepy' ] # 'TwoXChromosomes', 'Fitness', 'technology', 'WTF', 'bestof', 'AdviceAnimals', 'politics', 'atheism', 'interestingasfuck', 'europe', 'woahdude', 'BlackPeopleTwitter', 'oddlysatisfying', 'gonewild', 'leagueoflegends', 'pcmasterrace', 'reactiongifs', 'gameofthrones', 'wholesomememes', 'Unexpected', 'Overwatch', 'facepalm', 'trees', 'Android', 'lifehacks', 'me_irl', 'relationships', 'Games', 'nba', 'programming', 'tattoos', 'NatureIsFuckingLit', 'Whatcouldgowrong', 'CrappyDesign', 'dankmemes', 'nsfw', 'cringepics', '4chan', 'soccer', 'comics', 'sex', 'pokemon', 'malefashionadvice', 'NSFW_GIF', 'StarWars', 'Frugal', 'HistoryPorn', 'AnimalsBeingJerks', 'RealGirls', 'travel', 'buildapc', 'OutOfTheLoop'
 
 COMMENT_LIMIT = 300
 POST_LIMIT = 100
@@ -77,7 +78,7 @@ if __name__ == '__main__':
 						if j > COMMENT_LIMIT:
 							return
 							
-						sys.stdout.write('\r%d|%d' % (pidx, j))
+						# sys.stdout.write('\r%d|%d' % (pidx, j))
 						for c in R:
 							if isinstance(c, praw.models.MoreComments):
 								recurse(c.comments(), parent)
@@ -95,6 +96,7 @@ if __name__ == '__main__':
 										cur.execute('INSERT INTO test.rsentence (sentence, r_cid, body) VALUES (%s, %s, %s);', (sentence_id, c.id, c.body))
 										if not re.match('^[^\\w]*$', sentence):
 											R = parser.raw_parse(sentence)
+											list(R)[0].pretty_print()
 											def tree_recurse(parent, parent_id):
 												for child in parent:
 													if isinstance(child, nltk.Tree):
@@ -103,12 +105,12 @@ if __name__ == '__main__':
 														tree_recurse(child, plain_id)
 													else:
 														cur.execute('INSERT INTO plain (sentence, parent, word, label) VALUES (%s, %s, %s, %s)', (sentence_id, parent_id, child, parent.label()))
-											tree_recurse(list(R)[0], None)
+											# tree_recurse(list(R)[0], None)
 
 										# for tok in nltk.word_tokenize(sentence):
 										# 	cur.execute('INSERT INTO plain (parent, word, entity) VALUES (%s, %s, NULL)', (sentence_id, tok))
 											# w_dynamic = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
-									conn.commit()
+									# conn.commit()
 									recurse(c.replies, c)
 								except (KeyboardInterrupt, SystemExit):
 									raise

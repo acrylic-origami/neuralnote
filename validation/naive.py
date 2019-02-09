@@ -32,14 +32,18 @@ def run():
 			p.word,
 			p.label as tag
 		FROM (
-			SELECT s.*, st0.c FROM test.rtree tt
-				INNER JOIN test.rsentence ts ON ts.r_cid = tt.child
-				INNER JOIN sentences s ON s.id = ts.sentence
-				INNER JOIN (SELECT COUNT(*) c, tt.root FROM test.rtree AS tt GROUP BY tt.root LIMIT 10) st0 ON st0.c > 30 AND st0.root = tt.root
+			SELECT * FROM sentences LIMIT 100
 		) s
 			INNER JOIN plain p ON p.sentence = s.id
 			WHERE p.word IS NOT NULL AND p.word <> ''
 			ORDER BY s.id ASC;''')
+		'''
+			SELECT s.*, st0.c FROM test.rtree tt
+				INNER JOIN test.rsentence ts ON ts.r_cid = tt.child
+				INNER JOIN sentences s ON s.id = ts.sentence
+				INNER JOIN (SELECT COUNT(*) c, tt.root FROM test.rtree AS tt GROUP BY tt.root LIMIT 10) st0 ON st0.c > 30 AND st0.root = tt.root
+		'''
+		
 		D = {}
 		entity_state = None # TRow + { word: string[], tag: string[] }
 		for row in cur:
@@ -77,11 +81,11 @@ def run():
 		norms = [[np.asscalar(np.linalg.norm(np.matmul(s, np.array(t).T))) for _, t in W[i:]] for i, (_, s) in enumerate(W)]
 		np_norms = [np.array([norms[j][i-j] for j in range(i-1)] + n) for i, n in enumerate(norms)]
 
-def runb():
-	with psycopg2.connect('dbname=nl user=nl password=logbase') as conn:
-		cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-		np_norms = np.load('np_norms.npz.npy')
-		W = np.load('W.npz.npy')
+# def runb():
+# 	with psycopg2.connect('dbname=nl user=nl password=logbase') as conn:
+# 		cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+# 		np_norms = np.load('np_norms.npz.npy')
+# 		W = np.load('W.npz.npy')
 		for i, row in enumerate(np_norms):
 			sys.stdout.write('\r%d' % i)
 			top_rows = row.argsort()[-TOP:].tolist()
@@ -109,12 +113,18 @@ def runb():
 						INNER JOIN test.rsentence tr ON tr.r_cid = tt.parent
 						LEFT JOIN _top_sentences top_s ON top_s.sentence = tr.sentence
 				)
-				SELECT * FROM r WHERE match IS NOT NULL
-					UNION SELECT * FROM s WHERE match IS NOT NULL;
+				SELECT ts.body FROM (
+					SELECT parent AS id FROM r WHERE match IS NOT NULL
+						UNION
+					SELECT child AS id FROM s WHERE match IS NOT NULL
+				) st1
+					INNER JOIN test.rsentence ts ON ts.r_cid = st1.id;
 			''', (W[i][0], W[i][0]))
 			matches = cur.fetchall()
+			cur.execute('SELECT body FROM test.rsentence WHERE sentence = %s', (W[i][0],))
+			original = cur.fetchall()
 			if len(matches) > 0:
-				print(matches, top_rows)
+				print(matches, original, top_rows)
 			conn.rollback()
 		# see top 5 max matches branch
 		# for i, (sid_l, left) in enumerate(D_items):
@@ -122,4 +132,4 @@ def runb():
 		# 		K.model.similarity(left, right)
 		
 if __name__ == '__main__':
-	runb()
+	run()
